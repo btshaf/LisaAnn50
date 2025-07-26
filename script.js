@@ -6,7 +6,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const imageURLs = [
         "https://btshaf.github.io/LisaAnn50/IMG_0002.jpeg",
-        "https://btshaf.github.io/LisaAnn.github.io/LisaAnn50/IMG_0186.jpeg", // Corrected path
+        "https://btshaf.github.io/LisaAnn50/IMG_0186.jpeg",
         "https://btshaf.github.io/LisaAnn50/IMG_0190.jpeg",
         "https://btshaf.github.io/LisaAnn50/IMG_1249.JPG",
         "https://btshaf.github.io/LisaAnn50/IMG_1254.JPG",
@@ -178,7 +178,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
 
-    const allSlidesContent = []; // Initial slide is now in HTML
+    const allSlidesContent = []; // Initial slide is now in HTML, so this array only holds content slides
     let imageIndex = 0;
     let reasonSlideIndex = 0;
 
@@ -199,12 +199,12 @@ document.addEventListener('DOMContentLoaded', () => {
     // Song 1: 3 minutes 48 seconds = 228 seconds
     // Song 2: 4 minutes 18 seconds = 258 seconds
     const totalMusicDurationSeconds = 228 + 258; // Total 486 seconds
-    const numberOfSlides = allSlidesContent.length;
+    const numberOfSlides = allSlidesContent.length; // This is the count of image + reason slides
     const durationPerSlide = totalMusicDurationSeconds / numberOfSlides * 1000; // in milliseconds
 
     let currentSlideIndex = 0; // Start at 0 for the first content slide (after initial)
 
-    function createSlideElement(content) {
+    function createContentSlideElement(content) {
         const slideDiv = document.createElement('div');
         slideDiv.classList.add('slide');
 
@@ -228,32 +228,29 @@ document.addEventListener('DOMContentLoaded', () => {
         return slideDiv;
     }
 
-    function showSlide(index) {
-        // Hide the initial slide once the show starts
-        initialSlide.classList.remove('active');
+    function showContentSlide(index) {
+        // First, hide ALL currently active slides to ensure clean transition
+        const allActiveSlides = document.querySelectorAll('.slide.active');
+        allActiveSlides.forEach(slide => slide.classList.remove('active'));
 
-        const slides = document.querySelectorAll('#slideshow-container .slide');
-        slides.forEach((slide, i) => {
-            if (i === index) {
-                slide.classList.add('active');
-            } else {
-                slide.classList.remove('active');
-            }
-        });
+        // If the index is valid for a content slide, activate it
+        if (index >= 0 && index < slideshowContainer.children.length) {
+            slideshowContainer.children[index].classList.add('active');
+        }
     }
 
     function initializeContentSlides() {
         allSlidesContent.forEach(content => {
-            const slideElement = createSlideElement(content);
+            const slideElement = createContentSlideElement(content);
             slideshowContainer.appendChild(slideElement);
         });
-        // The first content slide will be shown after initial screen click
+        // Content slides are initialized but not shown yet
     }
 
-    function nextSlide() {
+    function nextContentSlide() {
         currentSlideIndex++;
         if (currentSlideIndex < numberOfSlides) {
-            showSlide(currentSlideIndex);
+            showContentSlide(currentSlideIndex);
         } else {
             // End of slideshow
             clearInterval(slideshowInterval);
@@ -278,19 +275,26 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Start slideshow and music only when the initial slide is clicked
     initialSlide.addEventListener('click', function startShow() {
+        console.log("Initial slide clicked!"); // Debugging log
+
+        // Attempt to play music
         backgroundMusic1.play().catch(e => {
             console.error("Music 1 autoplay failed:", e);
-            // If first music fails, try playing the second, or just start slideshow
+            // Fallback: If first music fails, try playing the second, or just start slideshow without music
             backgroundMusic2.play().catch(e2 => console.error("Music 2 autoplay failed (fallback):", e2));
         });
 
         // Hide the initial slide and show the first actual content slide
         initialSlide.classList.remove('active');
-        showSlide(currentSlideIndex); // Show the very first content slide
+        showContentSlide(currentSlideIndex); // Show the very first content slide (index 0 of allSlidesContent)
 
-        slideshowInterval = setInterval(nextSlide, durationPerSlide);
-        initialSlide.removeEventListener('click', startShow); // Remove listener after first click
-    });
+        // Start the automated slide transitions
+        slideshowInterval = setInterval(nextContentSlide, durationPerSlide);
+
+        // Remove the event listener to prevent multiple starts
+        initialSlide.removeEventListener('click', startShow);
+    }, { once: true }); // Ensure listener is only triggered once
+
 
     console.log(`Total content slides (after initial): ${numberOfSlides}`);
     console.log(`Duration per content slide: ${durationPerSlide / 1000} seconds`);
