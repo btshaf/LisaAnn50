@@ -202,6 +202,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const numberOfSlides = allSlidesContent.length; // This is the count of image + reason slides
     const durationPerSlide = totalMusicDurationSeconds / numberOfSlides * 1000; // in milliseconds
 
+    let slideshowInterval;
+    let paused = false; // New state variable for pause/play
     let currentSlideIndex = 0; // Start at 0 for the first content slide (after initial)
 
     function createContentSlideElement(content) {
@@ -262,7 +264,30 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    let slideshowInterval;
+    // New function to toggle pause/play
+    function togglePausePlay() {
+        if (paused) {
+            // Resume
+            console.log("Resuming slideshow and music.");
+            if (!backgroundMusic1.ended && backgroundMusic1.paused) {
+                backgroundMusic1.play();
+            } else if (!backgroundMusic2.ended && backgroundMusic2.paused) {
+                backgroundMusic2.play();
+            } else if (backgroundMusic1.ended && backgroundMusic2.paused) { // If song 1 ended while paused, start song 2
+                backgroundMusic2.play();
+            }
+
+            slideshowInterval = setInterval(nextContentSlide, durationPerSlide);
+            paused = false;
+        } else {
+            // Pause
+            console.log("Pausing slideshow and music.");
+            backgroundMusic1.pause();
+            backgroundMusic2.pause();
+            clearInterval(slideshowInterval);
+            paused = true;
+        }
+    }
 
     // Music playback logic
     backgroundMusic1.addEventListener('ended', () => {
@@ -270,7 +295,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // Initialize the content slides (hidden) when DOM is ready
-    // They will become visible after the initial screen click
     initializeContentSlides();
 
     // Start slideshow and music only when the initial slide is clicked
@@ -291,8 +315,11 @@ document.addEventListener('DOMContentLoaded', () => {
         // Start the automated slide transitions
         slideshowInterval = setInterval(nextContentSlide, durationPerSlide);
 
-        // Remove the event listener to prevent multiple starts
+        // Remove the event listener to prevent multiple starts on the initial slide
         initialSlide.removeEventListener('click', startShow);
+
+        // Add the new click listener for pause/play to the main slideshow area
+        slideshowContainer.addEventListener('click', togglePausePlay);
     }, { once: true }); // Ensure listener is only triggered once
 
 
