@@ -1,11 +1,12 @@
 document.addEventListener('DOMContentLoaded', () => {
     const slideshowContainer = document.getElementById('slideshow-container');
+    const initialSlide = document.getElementById('initial-slide');
     const backgroundMusic1 = document.getElementById('background-music-1');
     const backgroundMusic2 = document.getElementById('background-music-2');
 
     const imageURLs = [
         "https://btshaf.github.io/LisaAnn50/IMG_0002.jpeg",
-        "https://btshaf.github.io/LisaAnn50/IMG_0186.jpeg",
+        "https://btshaf.github.io/LisaAnn.github.io/LisaAnn50/IMG_0186.jpeg", // Corrected path
         "https://btshaf.github.io/LisaAnn50/IMG_0190.jpeg",
         "https://btshaf.github.io/LisaAnn50/IMG_1249.JPG",
         "https://btshaf.github.io/LisaAnn50/IMG_1254.JPG",
@@ -177,10 +178,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
 
-    const allSlidesContent = [
-        { type: 'initial' } // First slide: "We ❤️ Lisa"
-    ];
-
+    const allSlidesContent = []; // Initial slide is now in HTML
     let imageIndex = 0;
     let reasonSlideIndex = 0;
 
@@ -204,18 +202,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const numberOfSlides = allSlidesContent.length;
     const durationPerSlide = totalMusicDurationSeconds / numberOfSlides * 1000; // in milliseconds
 
-    let currentSlideIndex = 0;
+    let currentSlideIndex = 0; // Start at 0 for the first content slide (after initial)
 
     function createSlideElement(content) {
         const slideDiv = document.createElement('div');
         slideDiv.classList.add('slide');
 
-        if (content.type === 'initial') {
-            slideDiv.id = 'initial-slide';
-            const h1 = document.createElement('h1');
-            h1.innerHTML = `We ❤️ Lisa`; // Use innerHTML to render emoji
-            slideDiv.appendChild(h1);
-        } else if (content.type === 'image') {
+        if (content.type === 'image') {
             const img = document.createElement('img');
             img.src = content.url;
             slideDiv.appendChild(img);
@@ -236,7 +229,10 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function showSlide(index) {
-        const slides = document.querySelectorAll('.slide');
+        // Hide the initial slide once the show starts
+        initialSlide.classList.remove('active');
+
+        const slides = document.querySelectorAll('#slideshow-container .slide');
         slides.forEach((slide, i) => {
             if (i === index) {
                 slide.classList.add('active');
@@ -246,12 +242,12 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    function initializeSlideshow() {
+    function initializeContentSlides() {
         allSlidesContent.forEach(content => {
             const slideElement = createSlideElement(content);
             slideshowContainer.appendChild(slideElement);
         });
-        showSlide(currentSlideIndex);
+        // The first content slide will be shown after initial screen click
     }
 
     function nextSlide() {
@@ -276,19 +272,26 @@ document.addEventListener('DOMContentLoaded', () => {
         backgroundMusic2.play().catch(e => console.error("Music 2 autoplay failed:", e));
     });
 
-    // Start slideshow and music on user interaction
-    document.body.addEventListener('click', function startShow() {
+    // Initialize the content slides (hidden) when DOM is ready
+    // They will become visible after the initial screen click
+    initializeContentSlides();
+
+    // Start slideshow and music only when the initial slide is clicked
+    initialSlide.addEventListener('click', function startShow() {
         backgroundMusic1.play().catch(e => {
             console.error("Music 1 autoplay failed:", e);
             // If first music fails, try playing the second, or just start slideshow
             backgroundMusic2.play().catch(e2 => console.error("Music 2 autoplay failed (fallback):", e2));
         });
-        initializeSlideshow();
+
+        // Hide the initial slide and show the first actual content slide
+        initialSlide.classList.remove('active');
+        showSlide(currentSlideIndex); // Show the very first content slide
+
         slideshowInterval = setInterval(nextSlide, durationPerSlide);
-        document.body.removeEventListener('click', startShow); // Remove listener after first click
-    }, { once: true }); // Ensure listener is only triggered once
+        initialSlide.removeEventListener('click', startShow); // Remove listener after first click
+    });
 
-
-    console.log(`Total slides: ${numberOfSlides}`);
-    console.log(`Duration per slide: ${durationPerSlide / 1000} seconds`);
+    console.log(`Total content slides (after initial): ${numberOfSlides}`);
+    console.log(`Duration per content slide: ${durationPerSlide / 1000} seconds`);
 });
