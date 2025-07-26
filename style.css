@@ -63,6 +63,12 @@ body {
     color: #666;
 }
 
+#initial-slide h1 {
+    font-size: 8vw; /* Large text for initial screen */
+    color: #FF69B4; /* A nice pink for celebration! */
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+}
+
 /* Adjust font sizes for smaller screens if necessary */
 @media (max-width: 768px) {
     .slide .reason-text {
@@ -70,5 +76,8 @@ body {
     }
     .slide .contributor {
         font-size: 3.5vw;
+    }
+    #initial-slide h1 {
+        font-size: 10vw;
     }
 }
