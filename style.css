@@ -63,11 +63,23 @@ body {
     color: #666;
 }
 
+#initial-slide {
+    z-index: 10; /* Ensure it's on top of other content */
+    cursor: pointer; /* Indicates it's clickable */
+}
+
 #initial-slide h1 {
     font-size: 8vw; /* Large text for initial screen */
     color: #FF69B4; /* A nice pink for celebration! */
     text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
 }
+
+#initial-slide p {
+    font-size: 2.5vw;
+    margin-top: 20px;
+    color: #555;
+}
+
 
 /* Adjust font sizes for smaller screens if necessary */
 @media (max-width: 768px) {
@@ -79,5 +91,8 @@ body {
     }
     #initial-slide h1 {
         font-size: 10vw;
+    }
+    #initial-slide p {
+        font-size: 4vw;
     }
 }
