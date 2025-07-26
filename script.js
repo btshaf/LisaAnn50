@@ -266,18 +266,24 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // New function to toggle pause/play
     function togglePausePlay() {
+        console.log("togglePausePlay called. Current paused state:", paused); // Debugging log
+
         if (paused) {
             // Resume
             console.log("Resuming slideshow and music.");
             if (!backgroundMusic1.ended && backgroundMusic1.paused) {
+                console.log("Resuming Music 1.");
                 backgroundMusic1.play();
             } else if (!backgroundMusic2.ended && backgroundMusic2.paused) {
+                console.log("Resuming Music 2.");
                 backgroundMusic2.play();
             } else if (backgroundMusic1.ended && backgroundMusic2.paused) { // If song 1 ended while paused, start song 2
+                console.log("Music 1 ended, starting Music 2.");
                 backgroundMusic2.play();
             }
 
             slideshowInterval = setInterval(nextContentSlide, durationPerSlide);
+            console.log("Slideshow interval resumed.");
             paused = false;
         } else {
             // Pause
@@ -285,12 +291,14 @@ document.addEventListener('DOMContentLoaded', () => {
             backgroundMusic1.pause();
             backgroundMusic2.pause();
             clearInterval(slideshowInterval);
+            console.log("Slideshow interval cleared.");
             paused = true;
         }
     }
 
     // Music playback logic
     backgroundMusic1.addEventListener('ended', () => {
+        console.log("Music 1 ended, starting Music 2."); // Debugging log
         backgroundMusic2.play().catch(e => console.error("Music 2 autoplay failed:", e));
     });
 
@@ -299,7 +307,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Start slideshow and music only when the initial slide is clicked
     initialSlide.addEventListener('click', function startShow() {
-        console.log("Initial slide clicked!"); // Debugging log
+        console.log("Initial slide clicked! Starting show."); // Debugging log
 
         // Attempt to play music
         backgroundMusic1.play().catch(e => {
@@ -314,12 +322,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Start the automated slide transitions
         slideshowInterval = setInterval(nextContentSlide, durationPerSlide);
+        console.log("Initial slideshow interval started."); // Debugging log
 
         // Remove the event listener to prevent multiple starts on the initial slide
         initialSlide.removeEventListener('click', startShow);
 
         // Add the new click listener for pause/play to the main slideshow area
         slideshowContainer.addEventListener('click', togglePausePlay);
+        console.log("Pause/Play click listener added to slideshow container."); // Debugging log
     }, { once: true }); // Ensure listener is only triggered once
 
 
