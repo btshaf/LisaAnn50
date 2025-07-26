@@ -199,7 +199,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Calculate duration per slide based on total music length
     // Song 1: 3 minutes 48 seconds = 228 seconds
-    [cite_start]// Song 2: 4 minutes 18 seconds = 258 seconds [cite: 1, 2]
+    // Song 2: 4 minutes 18 seconds = 258 seconds
     const totalMusicDurationSeconds = 228 + 258; // Total 486 seconds
     const numberOfSlides = allSlidesContent.length;
     const durationPerSlide = totalMusicDurationSeconds / numberOfSlides * 1000; // in milliseconds
